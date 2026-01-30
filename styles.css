@@ -1,0 +1,1074 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #FF6B00;
+    --primary-dark: #E65100;
+    --secondary: #FFA726;
+    --background: #FFFBF5;
+    --surface: #FFFFFF;
+    --text: #1C1B1F;
+    --text-light: #666666;
+    --win: #4CAF50;
+    --near-win: #FFC107;
+    --error: #F44336;
+    --border: #E0E0E0;
+    --shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--background);
+    color: var(--text);
+    line-height: 1.5;
+}
+
+#app {
+    max-width: 800px;
+    margin: 0 auto;
+    min-height: 100vh;
+}
+
+/* Header */
+.header {
+    background: var(--primary);
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow);
+}
+
+.header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-icon {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.btn-icon:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* Main Content */
+.main-content {
+    padding: 16px;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.tab {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid var(--primary);
+    background: white;
+    color: var(--primary);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.tab.active {
+    background: var(--primary);
+    color: white;
+}
+
+.tab:hover:not(.active) {
+    background: rgba(255,107,0,0.1);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Section Header */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.section-header h2 {
+    font-size: 1.25rem;
+}
+
+/* Buttons */
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    padding: 10px 22px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background: rgba(255,107,0,0.1);
+}
+
+.btn-danger {
+    background: var(--error);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 0.875rem;
+}
+
+.btn-large {
+    padding: 16px 32px;
+    font-size: 1.125rem;
+}
+
+/* Tickets List */
+.tickets-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.ticket-card {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+}
+
+.ticket-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.ticket-info h3 {
+    font-size: 1.125rem;
+    margin-bottom: 4px;
+}
+
+.ticket-meta {
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+.ticket-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-delete {
+    background: transparent;
+    border: none;
+    color: var(--error);
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 4px;
+}
+
+/* Ticket Grid */
+.ticket-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border: 3px solid var(--primary);
+    border-radius: 8px;
+    padding: 4px;
+    background: var(--primary);
+}
+
+.ticket-row {
+    display: flex;
+    gap: 2px;
+}
+
+.ticket-cell {
+    flex: 1;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 4px;
+    min-width: 0;
+}
+
+.ticket-cell.empty {
+    background: #F5F5F5;
+}
+
+.ticket-cell.number {
+    background: var(--primary);
+    color: white;
+}
+
+.ticket-cell.marked {
+    background: var(--win);
+    color: white;
+}
+
+.ticket-cell.near-win {
+    background: var(--near-win);
+    color: black;
+}
+
+.ticket-grid.editable .ticket-cell {
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.ticket-grid.editable .ticket-cell:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.ticket-cell.selected {
+    outline: 3px solid var(--primary-dark);
+    outline-offset: 2px;
+}
+
+.ticket-cell.error {
+    background: rgba(244,67,54,0.3);
+    border: 2px solid var(--error);
+}
+
+/* Row status */
+.ticket-row.won {
+    background: rgba(76,175,80,0.3);
+    border-radius: 4px;
+}
+
+.ticket-row.near-win-row {
+    background: rgba(255,193,7,0.3);
+    border-radius: 4px;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--text-light);
+}
+
+.empty-state p {
+    margin-bottom: 8px;
+}
+
+.hint {
+    font-size: 0.875rem;
+    color: var(--text-light);
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-content.modal-large {
+    max-width: 600px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+    font-size: 1.25rem;
+}
+
+.btn-close {
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--text-light);
+    line-height: 1;
+}
+
+.ticket-row.group-separator {
+    border-bottom: 4px double #555; /* Đường kẻ đôi ngăn cách nhóm */
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+}
+
+.modal-body {
+    padding: 80px;
+}
+
+.modal-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+/* Create Options */
+.create-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.create-option {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--background);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.create-option:hover {
+    border-color: var(--primary);
+    background: rgba(255,107,0,0.05);
+}
+
+.create-option .icon {
+    font-size: 1.5rem;
+}
+
+/* Form */
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* Column Ranges */
+.column-ranges {
+    margin-top: 16px;
+    padding: 12px;
+    background: var(--background);
+    border-radius: 8px;
+}
+
+.column-ranges p {
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+}
+
+.ranges-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 0.75rem;
+}
+
+.ranges-row span {
+    background: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+}
+
+/* Cell Input Section */
+.cell-input-section {
+    margin-top: 16px;
+    padding: 16px;
+    background: var(--background);
+    border-radius: 8px;
+}
+
+.cell-input-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 0.875rem;
+}
+
+.cell-input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.cell-input-row input {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.quick-numbers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.quick-number-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: rgba(255,107,0,0.1);
+    color: var(--primary);
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.quick-number-btn:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* Error Message */
+.error-message {
+    background: rgba(244,67,54,0.1);
+    color: var(--error);
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 12px;
+    font-size: 0.875rem;
+}
+
+/* Draw Section */
+.draw-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.draw-input-section {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+}
+
+.draw-input-section h3 {
+    margin-bottom: 12px;
+}
+
+.draw-input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.draw-input-row input {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+/* Number Pad Toggle */
+.number-pad-toggle {
+    margin-bottom: 12px;
+}
+
+.btn-toggle {
+    width: 100%;
+    padding: 10px 16px;
+    background: var(--background);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.btn-toggle:hover {
+    border-color: var(--primary);
+    background: rgba(255,107,0,0.05);
+}
+
+.btn-toggle.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Number Pad Wrapper */
+.number-pad-wrapper {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.number-pad-wrapper.show {
+    max-height: 400px;
+}
+
+/* Number Pad */
+.number-pad {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 4px;
+    margin-bottom: 16px;
+    padding-top: 8px;
+}
+
+.number-pad-btn {
+    aspect-ratio: 1;
+    border: none;
+    background: rgba(255,107,0,0.1);
+    color: var(--primary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.number-pad-btn:hover:not(.drawn) {
+    background: var(--primary);
+    color: white;
+}
+
+.number-pad-btn.drawn {
+    background: var(--win);
+    color: white;
+    cursor: default;
+}
+
+/* Drawn Numbers */
+.drawn-numbers-section {
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+}
+
+.drawn-numbers-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.drawn-numbers-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 40px;
+}
+
+.drawn-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--win);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.drawn-chip .remove-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.8);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0;
+    line-height: 1;
+}
+
+.drawn-chip .remove-btn:hover {
+    color: white;
+}
+
+/* Draw Tickets */
+.draw-tickets-section h3 {
+    margin-bottom: 16px;
+}
+
+.draw-tickets-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.draw-ticket-card {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+}
+
+.draw-ticket-card.won {
+    background: rgba(76,175,80,0.1);
+    border: 2px solid var(--win);
+}
+
+.draw-ticket-card.near-win {
+    background: rgba(255,193,7,0.1);
+    border: 2px solid var(--near-win);
+}
+
+.draw-ticket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: white;
+}
+
+.status-badge.win {
+    background: var(--win);
+}
+
+.status-badge.near {
+    background: var(--near-win);
+    color: black;
+}
+
+.draw-ticket-footer {
+    margin-top: 12px;
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+/* Win Dialogs */
+.win-modal .modal-content,
+.near-win-modal .modal-content {
+    text-align: center;
+    padding: 32px;
+}
+
+.win-content {
+    background: var(--win) !important;
+    color: white;
+}
+
+.near-win-content {
+    background: var(--near-win) !important;
+    color: black;
+}
+
+.win-icon {
+    font-size: 4rem;
+    margin-bottom: 16px;
+}
+
+.win-content h2,
+.near-win-content h2 {
+    font-size: 2rem;
+    margin-bottom: 16px;
+}
+
+.win-content p,
+.near-win-content p {
+    font-size: 1.125rem;
+    margin-bottom: 24px;
+}
+
+.win-content .btn-primary {
+    background: white;
+    color: var(--win);
+}
+
+.near-win-content .btn-primary {
+    background: black;
+    color: var(--near-win);
+}
+
+/* Confirm Dialog */
+.confirm-content {
+    padding: 24px;
+    text-align: center;
+}
+
+.confirm-content h3 {
+    margin-bottom: 12px;
+}
+
+.confirm-content p {
+    margin-bottom: 24px;
+    color: var(--text-light);
+}
+
+.confirm-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+/* History */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.history-card {
+    background: var(--background);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.history-date {
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+.history-numbers {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    margin-top: 8px;
+}
+
+/* Camera */
+.camera-container {
+    position: relative;
+    width: 100%;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+#camera-video {
+    width: 100%;
+    display: block;
+}
+
+.camera-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.camera-guide {
+    width: 80%;
+    aspect-ratio: 3/1;
+    border: 3px dashed rgba(255,255,255,0.7);
+    border-radius: 8px;
+}
+
+.camera-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.camera-actions button {
+    flex: 1;
+}
+
+.btn-capture {
+    font-size: 1.125rem;
+}
+
+.camera-hint {
+    text-align: center;
+}
+
+#captured-image {
+    width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+}
+
+/* Upload */
+.upload-area {
+    border: 3px dashed var(--border);
+    border-radius: 12px;
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--background);
+}
+
+.upload-area:hover {
+    border-color: var(--primary);
+    background: rgba(255,107,0,0.05);
+}
+
+.upload-area.dragover {
+    border-color: var(--primary);
+    background: rgba(255,107,0,0.1);
+}
+
+.upload-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+}
+
+#uploaded-image {
+    width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+}
+
+.upload-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.upload-actions button {
+    flex: 1;
+}
+
+/* Win Message List (multiple winners) */
+.win-message-list {
+    margin-bottom: 24px;
+}
+
+.win-message-item {
+    padding: 8px 16px;
+    margin: 8px 0;
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.near-win-content .win-message-item {
+    background: rgba(0,0,0,0.1);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: 1.25rem;
+    }
+
+    .ticket-cell {
+        font-size: 0.875rem;
+    }
+
+    .number-pad {
+        grid-template-columns: repeat(9, 1fr);
+    }
+
+    .ranges-row {
+        font-size: 0.625rem;
+    }
+
+    .modal-content {
+        border-radius: 12px 12px 0 0;
+        position: fixed;
+        bottom: 0;
+        max-height: 85vh;
+    }
+
+    /* Smart Keypad (Bàn phím gợi ý) */
+.smart-keypad-overlay {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+    z-index: 2000; /* Cao hơn modal */
+    transform: translateY(100%);
+    transition: transform 0.3s ease-out;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.smart-keypad-overlay.show {
+    transform: translateY(0);
+}
+
+.keypad-header {
+    padding: 10px 15px;
+    background: #f5f5f5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+}
+
+.keypad-title {
+    font-weight: bold;
+    color: #333;
+}
+
+.keypad-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 5 cột số */
+    gap: 8px;
+    padding: 15px;
+    max-height: 40vh;
+    overflow-y: auto;
+}
+
+.keypad-btn {
+    padding: 12px 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 8px;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.1s;
+}
+
+.keypad-btn:active {
+    background: #e3f2fd;
+    transform: scale(0.95);
+}
+
+.keypad-btn.used {
+    background-color: #eee;
+    color: #aaa;
+    pointer-events: none; /* Không cho chọn số đã dùng */
+}
+
+.btn-close-keypad {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #666;
+    padding: 0 10px;
+}
+
+/* Ẩn input cũ đi vì không cần nữa */
+.cell-input-section {
+    display: none !important; 
+}
+}

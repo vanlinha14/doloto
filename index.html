@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dò Lô Tô</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <h1>Dò Lô Tô</h1>
+            <div class="header-actions">
+                <button class="btn-icon" onclick="showHistory()" title="Lịch sử">📜</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" data-tab="tickets" onclick="switchTab('tickets')">Vé của tôi</button>
+                <button class="tab" data-tab="draw" onclick="switchTab('draw')">Dò vé</button>
+            </div>
+
+            <!-- Tickets Tab -->
+            <div id="tickets-tab" class="tab-content active">
+                <div class="section-header">
+                    <h2>Danh sách vé</h2>
+                    <button class="btn-primary" onclick="showCreateTicketModal()">+ Tạo vé mới</button>
+                </div>
+                <div id="tickets-list" class="tickets-list"></div>
+                <div id="empty-tickets" class="empty-state" style="display: none;">
+                    <p>Chưa có vé nào</p>
+                    <p class="hint">Nhấn "Tạo vé mới" để bắt đầu</p>
+                </div>
+            </div>
+
+            <!-- Draw Tab -->
+            <div id="draw-tab" class="tab-content">
+                <div class="draw-container">
+                    <!-- Number Input -->
+                    <div class="draw-input-section">
+                        <h3>Nhập số đã quay</h3>
+                        <div class="draw-input-row">
+                            <input type="number" id="draw-number-input" min="1" max="90" placeholder="1-90">
+                            <button class="btn-primary" onclick="addDrawnNumber()">Thêm</button>
+                        </div>
+
+                        <!-- Toggle Number Pad -->
+                        <div class="number-pad-toggle">
+                            <button class="btn-toggle" id="toggle-numpad-btn" onclick="toggleNumberPad()">
+                                <span id="numpad-toggle-icon">▼</span> Bảng số 1-90
+                            </button>
+                        </div>
+
+                        <!-- Number Pad (collapsible) -->
+                        <div class="number-pad-wrapper" id="number-pad-wrapper">
+                            <div class="number-pad" id="number-pad"></div>
+                        </div>
+
+                        <!-- Drawn Numbers Display -->
+                        <div class="drawn-numbers-section">
+                            <div class="drawn-numbers-header">
+                                <span>Số đã quay: <strong id="drawn-count">0</strong></span>
+                                <button class="btn-secondary btn-small" onclick="clearAllDrawnNumbers()">Xóa hết</button>
+                            </div>
+                            <div id="drawn-numbers-display" class="drawn-numbers-chips"></div>
+                        </div>
+                    </div>
+
+                    <!-- Tickets being checked -->
+                    <div class="draw-tickets-section">
+                        <h3>Vé đang dò</h3>
+                        <div id="draw-tickets-list" class="draw-tickets-list"></div>
+                        <div id="empty-draw-tickets" class="empty-state" style="display: none;">
+                            <p>Chưa có vé nào để dò</p>
+                            <p class="hint">Hãy tạo vé trước</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Ticket Modal -->
+    <div id="create-ticket-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Tạo vé mới</h2>
+                <button class="btn-close" onclick="closeCreateTicketModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="create-options">
+                    <button class="create-option" onclick="showManualCreate()">
+                        <span class="icon">✏️</span>
+                        <span>Nhập thủ công</span>
+                    </button>
+                    <button class="create-option" onclick="showCameraCreate()">
+                        <span class="icon">📷</span>
+                        <span>Chụp ảnh vé</span>
+                    </button>
+                    <button class="create-option" onclick="showUploadCreate()">
+                        <span class="icon">📤</span>
+                        <span>Upload ảnh vé</span>
+                    </button>
+                    <button class="create-option" onclick="createRandomTicket()">
+                        <span class="icon">🎲</span>
+                        <span>Tạo ngẫu nhiên</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manual Create Modal -->
+    <div id="manual-create-modal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Tạo vé thủ công</h2>
+                <button class="btn-close" onclick="closeManualCreateModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="ticket-name">Tên vé</label>
+                    <input type="text" id="ticket-name" placeholder="Nhập tên vé">
+                </div>
+
+                <p class="hint">Nhấn vào ô để nhập số. Mỗi hàng phải có đúng 5 số.</p>
+
+                <div id="edit-ticket-grid" class="ticket-grid editable"></div>
+
+                <div class="column-ranges">
+                    <p><strong>Phạm vi số theo cột:</strong></p>
+                    <div class="ranges-row">
+                        <span>C1: 1-9</span>
+                        <span>C2: 10-19</span>
+                        <span>C3: 20-29</span>
+                        <span>C4: 30-39</span>
+                        <span>C5: 40-49</span>
+                        <span>C6: 50-59</span>
+                        <span>C7: 60-69</span>
+                        <span>C8: 70-79</span>
+                        <span>C9: 80-90</span>
+                    </div>
+                </div>
+
+                <div id="cell-input-section" class="cell-input-section" style="display: none;">
+                    <div class="cell-input-header">
+                        <span id="cell-position">Hàng 1, Cột 1</span>
+                        <span id="cell-range">Số hợp lệ: 1-9</span>
+                    </div>
+                    <div class="cell-input-row">
+                        <input type="number" id="cell-number-input" min="1" max="90">
+                        <button class="btn-primary" onclick="setCellNumber()">OK</button>
+                        <button class="btn-secondary" onclick="clearCellNumber()">Xóa</button>
+                    </div>
+                    <div id="quick-numbers" class="quick-numbers"></div>
+                </div>
+
+                <div id="create-error" class="error-message" style="display: none;"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeManualCreateModal()">Hủy</button>
+                <button class="btn-primary" onclick="saveManualTicket()">Lưu vé</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera Modal -->
+    <div id="camera-modal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Chụp ảnh vé</h2>
+                <button class="btn-close" onclick="closeCameraModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="camera-section">
+                    <div class="camera-container">
+                        <video id="camera-video" autoplay playsinline></video>
+                        <div class="camera-overlay">
+                            <div class="camera-guide"></div>
+                        </div>
+                    </div>
+                    <div class="camera-actions">
+                        <button class="btn-secondary" onclick="switchCamera()">🔄 Đổi camera</button>
+                        <button class="btn-primary btn-capture" onclick="capturePhoto()">📷 Chụp</button>
+                    </div>
+                    <p class="hint camera-hint">Đặt vé lô tô trong khung và nhấn Chụp</p>
+                </div>
+
+                <div id="camera-review-section" style="display: none;">
+                    <img id="captured-image" alt="Ảnh đã chụp">
+                <div style="margin: 10px 0;">
+                    <button class="btn-primary" style="width: 100%; background-color: #673AB7;" onclick="runCameraOCR()">
+                        ✨ Nhận diện số tự động (OCR)
+                    </button>
+                </div>
+                <p class="hint">Kiểm tra và nhập số vào các ô. OCR tự động đang được phát triển.</p>
+
+                    <div class="form-group">
+                        <label for="camera-ticket-name">Tên vé</label>
+                        <input type="text" id="camera-ticket-name" placeholder="Nhập tên vé">
+                    </div>
+
+                    <div id="camera-ticket-grid" class="ticket-grid editable"></div>
+
+                    <div id="camera-cell-input-section" class="cell-input-section" style="display: none;">
+                        <div class="cell-input-header">
+                            <span id="camera-cell-position">Hàng 1, Cột 1</span>
+                            <span id="camera-cell-range">Số hợp lệ: 1-9</span>
+                        </div>
+                        <div class="cell-input-row">
+                            <input type="number" id="camera-cell-number-input" min="1" max="90">
+                            <button class="btn-primary" onclick="setCameraCellNumber()">OK</button>
+                            <button class="btn-secondary" onclick="clearCameraCellNumber()">Xóa</button>
+                        </div>
+                        <div id="camera-quick-numbers" class="quick-numbers"></div>
+                    </div>
+
+                    <div id="camera-error" class="error-message" style="display: none;"></div>
+
+                    <div class="upload-actions">
+                        <button class="btn-secondary" onclick="retakePhoto()">🔄 Chụp lại</button>
+                        <button class="btn-primary" onclick="saveCameraTicket()">💾 Lưu vé</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="upload-modal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Upload ảnh vé</h2>
+                <button class="btn-close" onclick="closeUploadModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="upload-section">
+                    <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+                        <div class="upload-icon">📤</div>
+                        <p>Nhấn để chọn ảnh hoặc kéo thả vào đây</p>
+                        <p class="hint">Hỗ trợ: JPG, PNG, GIF</p>
+                    </div>
+                    <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="handleFileUpload(event)">
+                </div>
+
+                <div id="upload-review-section" style="display: none;">
+                    <img id="uploaded-image" alt="Ảnh đã upload">
+                <div style="margin: 10px 0;">
+                    <button class="btn-primary" style="width: 100%; background-color: #673AB7;" onclick="runUploadOCR()">
+                        ✨ Nhận diện số tự động (OCR)
+                    </button>
+                </div>
+                <p class="hint">Kiểm tra và nhập số vào các ô. OCR tự động đang được phát triển.</p>
+
+                    <div class="form-group">
+                        <label for="upload-ticket-name">Tên vé</label>
+                        <input type="text" id="upload-ticket-name" placeholder="Nhập tên vé">
+                    </div>
+
+                    <div id="upload-ticket-grid" class="ticket-grid editable"></div>
+
+                    <div id="upload-cell-input-section" class="cell-input-section" style="display: none;">
+                        <div class="cell-input-header">
+                            <span id="upload-cell-position">Hàng 1, Cột 1</span>
+                            <span id="upload-cell-range">Số hợp lệ: 1-9</span>
+                        </div>
+                        <div class="cell-input-row">
+                            <input type="number" id="upload-cell-number-input" min="1" max="90">
+                            <button class="btn-primary" onclick="setUploadCellNumber()">OK</button>
+                            <button class="btn-secondary" onclick="clearUploadCellNumber()">Xóa</button>
+                        </div>
+                        <div id="upload-quick-numbers" class="quick-numbers"></div>
+                    </div>
+
+                    <div id="upload-error" class="error-message" style="display: none;"></div>
+
+                    <div class="upload-actions">
+                        <button class="btn-secondary" onclick="resetUpload()">🔄 Chọn ảnh khác</button>
+                        <button class="btn-primary" onclick="saveUploadTicket()">💾 Lưu vé</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div id="history-modal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Lịch sử dò vé</h2>
+                <button class="btn-close" onclick="closeHistoryModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="history-list" class="history-list"></div>
+                <div id="empty-history" class="empty-state" style="display: none;">
+                    <p>Chưa có lịch sử</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Win Dialog (supports multiple winners) -->
+    <div id="win-dialog" class="modal win-modal">
+        <div class="modal-content win-content">
+            <div class="win-icon">🎉</div>
+            <h2>THẮNG!</h2>
+            <div id="win-message-list" class="win-message-list"></div>
+            <button class="btn-primary btn-large" onclick="closeWinDialog()">OK</button>
+        </div>
+    </div>
+
+    <!-- Near Win Dialog (supports multiple) -->
+    <div id="near-win-dialog" class="modal near-win-modal">
+        <div class="modal-content near-win-content">
+            <div class="win-icon">⚡</div>
+            <h2>SẮP THẮNG!</h2>
+            <div id="near-win-message-list" class="win-message-list"></div>
+            <button class="btn-primary btn-large" onclick="closeNearWinDialog()">OK</button>
+        </div>
+    </div>
+
+    <!-- Confirm Dialog -->
+    <div id="confirm-dialog" class="modal">
+        <div class="modal-content confirm-content">
+            <h3 id="confirm-title">Xác nhận</h3>
+            <p id="confirm-message"></p>
+            <div class="confirm-actions">
+                <button class="btn-secondary" onclick="closeConfirmDialog()">Hủy</button>
+                <button class="btn-danger" id="confirm-btn" onclick="confirmAction()">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
