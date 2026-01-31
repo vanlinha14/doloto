@@ -287,6 +287,92 @@ body {
     outline-offset: 2px;
 }
 
+/* ==================== Inline Editing ==================== */
+.ticket-cell.editing {
+    padding: 0;
+    background: white;
+}
+
+.cell-inline-input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    text-align: center;
+    font-weight: 700;
+    color: var(--primary);
+    outline: none;
+    padding: 0;
+    font-size: inherit;
+}
+
+/* Classic grid - input nhỏ hơn */
+.ticket-grid:not(.ticket-grid-5x5) .cell-inline-input {
+    font-size: 0.85rem;
+}
+
+/* 5x5 grid - input lớn hơn */
+.ticket-grid-5x5 .cell-inline-input {
+    font-size: 1rem;
+}
+
+/* Quick numbers section simplified */
+.quick-numbers-section {
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--background);
+    border-radius: 8px;
+}
+
+.quick-numbers-section .helper-hint {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-bottom: 8px;
+}
+
+/* ==================== Bulk Input ==================== */
+.bulk-input-section {
+    margin-bottom: 16px;
+}
+
+.bulk-input-section #bulk-input-toggle {
+    margin-bottom: 8px;
+}
+
+#bulk-input-container {
+    background: var(--background);
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+#bulk-input-text {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    resize: vertical;
+    margin-bottom: 8px;
+}
+
+#bulk-input-text:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+.bulk-input-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.bulk-input-actions button {
+    flex: 1;
+}
+
 .ticket-cell.error {
     background: rgba(244,67,54,0.3);
     border: 2px solid var(--error);
@@ -301,6 +387,111 @@ body {
 .ticket-row.near-win-row {
     background: rgba(255,193,7,0.3);
     border-radius: 4px;
+}
+
+/* ==================== Grid 5x5 ==================== */
+.ticket-grid-5x5 {
+    max-width: 300px;
+}
+
+.ticket-grid-5x5 .ticket-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.ticket-grid-5x5 .ticket-cell {
+    aspect-ratio: 1;
+    font-size: 0.9rem;
+}
+
+.ticket-cell.center-empty {
+    background: #E0E0E0;
+    color: #999;
+    font-size: 1rem;
+}
+
+.ticket-cell.center-empty.disabled {
+    cursor: default !important;
+}
+
+.ticket-grid-5x5.editable .ticket-cell.center-empty:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Ticket card cho vé 5x5 */
+.ticket-card.ticket-5x5 .ticket-grid-5x5,
+.draw-ticket-card.ticket-5x5 .ticket-grid-5x5 {
+    margin: 0 auto;
+}
+
+/* ==================== Ticket Type Selector ==================== */
+.ticket-type-selector {
+    margin-bottom: 20px;
+}
+
+.ticket-type-selector label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+.type-options {
+    display: flex;
+    gap: 12px;
+}
+
+.type-btn {
+    flex: 1;
+    padding: 14px 12px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.type-btn:hover {
+    border-color: var(--primary);
+    background: rgba(255,107,0,0.05);
+}
+
+.type-btn.active {
+    border-color: var(--primary);
+    background: rgba(255,107,0,0.1);
+    color: var(--primary);
+}
+
+.type-btn .icon {
+    font-size: 1.5rem;
+}
+
+.type-btn span:last-child {
+    font-size: 0.8rem;
+}
+
+/* Quick numbers cho 5x5 (nhiều hơn) */
+.quick-numbers-5x5 {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.quick-numbers-5x5 .quick-number-btn {
+    width: auto;
+    height: 32px;
+    font-size: 0.8rem;
 }
 
 /* Empty State */
@@ -1070,5 +1261,18 @@ body {
 /* Ẩn input cũ đi vì không cần nữa */
 .cell-input-section {
     display: none !important; 
+}
+
+/* Thêm vào styles.css */
+.ticket-grid-5x5 {
+    display: grid !important;
+    grid-template-columns: repeat(1, 1fr); /* Giữ cấu trúc hàng */
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.ticket-grid-5x5 .ticket-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* Luôn là 5 cột cho vé 5x5 */
 }
 }

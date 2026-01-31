@@ -92,16 +92,31 @@
                 <button class="btn-close" onclick="closeCreateTicketModal()">&times;</button>
             </div>
             <div class="modal-body">
+                <!-- Chọn loại vé -->
+                <div class="ticket-type-selector">
+                    <label>Chọn loại vé:</label>
+                    <div class="type-options">
+                        <button class="type-btn active" data-type="classic" onclick="selectTicketType('classic')">
+                            <span class="icon">🎫</span>
+                            <span>Cổ điển (90 số)</span>
+                        </button>
+                        <button class="type-btn" data-type="5x5" onclick="selectTicketType('5x5')">
+                            <span class="icon">⭐</span>
+                            <span>Đơn giản (5x5)</span>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="create-options">
                     <button class="create-option" onclick="showManualCreate()">
                         <span class="icon">✏️</span>
                         <span>Nhập thủ công</span>
                     </button>
-                    <button class="create-option" onclick="showCameraCreate()">
+                    <button class="create-option" onclick="goToCameraPage()">
                         <span class="icon">📷</span>
                         <span>Chụp ảnh vé</span>
                     </button>
-                    <button class="create-option" onclick="showUploadCreate()">
+                    <button class="create-option" onclick="goToUploadPage()">
                         <span class="icon">📤</span>
                         <span>Upload ảnh vé</span>
                     </button>
@@ -118,7 +133,7 @@
     <div id="manual-create-modal" class="modal">
         <div class="modal-content modal-large">
             <div class="modal-header">
-                <h2>Tạo vé thủ công</h2>
+                <h2 id="manual-create-title">Tạo vé thủ công</h2>
                 <button class="btn-close" onclick="closeManualCreateModal()">&times;</button>
             </div>
             <div class="modal-body">
@@ -127,39 +142,70 @@
                     <input type="text" id="ticket-name" placeholder="Nhập tên vé">
                 </div>
 
-                <p class="hint">Nhấn vào ô để nhập số. Mỗi hàng phải có đúng 5 số.</p>
+                <p class="hint" id="manual-create-hint">Nhấn vào ô để nhập số. Mỗi hàng phải có đúng 5 số.</p>
 
-                <div id="edit-ticket-grid" class="ticket-grid editable"></div>
-
-                <div class="column-ranges">
-                    <p><strong>Phạm vi số theo cột:</strong></p>
-                    <div class="ranges-row">
-                        <span>C1: 1-9</span>
-                        <span>C2: 10-19</span>
-                        <span>C3: 20-29</span>
-                        <span>C4: 30-39</span>
-                        <span>C5: 40-49</span>
-                        <span>C6: 50-59</span>
-                        <span>C7: 60-69</span>
-                        <span>C8: 70-79</span>
-                        <span>C9: 80-90</span>
+                <!-- Nhập hàng loạt -->
+                <div class="bulk-input-section">
+                    <button class="btn-secondary btn-small" onclick="toggleBulkInput()" id="bulk-input-toggle">
+                        📝 Nhập hàng loạt
+                    </button>
+                    <div id="bulk-input-container" style="display: none;">
+                        <textarea id="bulk-input-text" placeholder="Nhập số theo dòng, mỗi dòng là 1 hàng của vé
+Ví dụ:
+1 2 3 4 5
+6, 7, 8, 9, 10
+11; 12; 13; 14; 15"></textarea>
+                        <div class="bulk-input-actions">
+                            <button class="btn-secondary btn-small" onclick="clearBulkInput()">Xóa</button>
+                            <button class="btn-primary btn-small" onclick="applyBulkInput()">Áp dụng</button>
+                        </div>
+                        <p class="hint">Hỗ trợ: dấu cách, dấu phẩy, dấu chấm phẩy. Mỗi dòng = 1 hàng vé.</p>
                     </div>
                 </div>
 
-                <div id="cell-input-section" class="cell-input-section" style="display: none;">
-                    <div class="cell-input-header">
-                        <span id="cell-position">Hàng 1, Cột 1</span>
-                        <span id="cell-range">Số hợp lệ: 1-9</span>
+                <!-- Grid cho vé cổ điển -->
+                <div id="classic-grid-section">
+                    <div id="edit-ticket-grid" class="ticket-grid editable"></div>
+
+                    <div id="column-ranges-info" class="column-ranges">
+                        <p><strong>Phạm vi số theo cột:</strong></p>
+                        <div class="ranges-row">
+                            <span>C1: 1-9</span>
+                            <span>C2: 10-19</span>
+                            <span>C3: 20-29</span>
+                            <span>C4: 30-39</span>
+                            <span>C5: 40-49</span>
+                            <span>C6: 50-59</span>
+                            <span>C7: 60-69</span>
+                            <span>C8: 70-79</span>
+                            <span>C9: 80-90</span>
+                        </div>
                     </div>
-                    <div class="cell-input-row">
-                        <input type="number" id="cell-number-input" min="1" max="90">
-                        <button class="btn-primary" onclick="setCellNumber()">OK</button>
-                        <button class="btn-secondary" onclick="clearCellNumber()">Xóa</button>
+
+                    <!-- Quick numbers section - chọn nhanh -->
+                    <div id="quick-numbers-section" class="quick-numbers-section" style="display: none;">
+                        <p class="helper-hint">Chọn nhanh:</p>
+                        <div class="quick-numbers"></div>
                     </div>
-                    <div id="quick-numbers" class="quick-numbers"></div>
+                </div>
+
+                <!-- Grid cho vé 5x5 -->
+                <div id="5x5-grid-section" style="display: none;">
+                    <div id="edit-ticket-grid-5x5" class="ticket-grid ticket-grid-5x5 editable"></div>
+
+                    <div class="column-ranges">
+                        <p><strong>Lưu ý:</strong> Vé 5x5 gồm 2 khung, mỗi khung 5x5. Ô giữa (★) không nhập số. Số không trùng trong cùng 1 khung.</p>
+                    </div>
+
+                    <!-- Quick numbers section cho 5x5 -->
+                    <div id="quick-numbers-section-5x5" class="quick-numbers-section" style="display: none;">
+                        <p class="helper-hint">Chọn nhanh (1-90):</p>
+                        <div class="quick-numbers quick-numbers-5x5"></div>
+                    </div>
                 </div>
 
                 <div id="create-error" class="error-message" style="display: none;"></div>
+                <div id="create-error-5x5" class="error-message" style="display: none;"></div>
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeManualCreateModal()">Hủy</button>

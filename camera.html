@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chụp ảnh vé - Dò Lô Tô</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .page-header {
+            background: var(--primary);
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .btn-back {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .page-header h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        .page-content {
+            flex: 1;
+            padding: 16px;
+        }
+        .camera-container {
+            position: relative;
+            width: 100%;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        #camera-video {
+            width: 100%;
+            display: block;
+            max-height: 50vh;
+            object-fit: cover;
+        }
+        .camera-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        .camera-guide {
+            width: 90%;
+            aspect-ratio: 3/1;
+            border: 3px dashed rgba(255,255,255,0.7);
+            border-radius: 8px;
+        }
+        .camera-guide.guide-5x5 {
+            aspect-ratio: 1/1;
+        }
+        .camera-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .camera-actions button {
+            flex: 1;
+        }
+        .btn-capture {
+            font-size: 1.125rem;
+            padding: 16px;
+        }
+        #captured-image {
+            width: 100%;
+            max-height: 40vh;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+        }
+        .ocr-btn {
+            width: 100%;
+            background-color: #673AB7 !important;
+            margin-bottom: 12px;
+            padding: 14px;
+        }
+        .save-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            padding-bottom: 20px;
+        }
+        .save-actions button {
+            flex: 1;
+            padding: 14px;
+        }
+        .ticket-grid {
+            margin: 16px 0;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .status-message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 0.875rem;
+        }
+        .column-ranges {
+            margin: 12px 0;
+            padding: 12px;
+            background: var(--background);
+            border-radius: 8px;
+            font-size: 0.75rem;
+        }
+        .ranges-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .ranges-row span {
+            background: white;
+            padding: 4px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+        .quick-numbers-section {
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--background);
+            border-radius: 8px;
+        }
+        .quick-numbers-section .helper-hint {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+        .quick-numbers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .quick-number-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: rgba(255,107,0,0.1);
+            color: var(--primary);
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .quick-number-btn:hover, .quick-number-btn:active {
+            background: var(--primary);
+            color: white;
+        }
+        .quick-numbers-5x5 {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .quick-numbers-5x5 .quick-number-btn {
+            width: auto;
+            height: 32px;
+            font-size: 0.8rem;
+        }
+        .ticket-type-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-left: 8px;
+        }
+        .bulk-input-section {
+            margin-bottom: 12px;
+        }
+        .bulk-input-container {
+            background: var(--background);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+        #bulk-input-text {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            margin-bottom: 8px;
+        }
+        #bulk-input-text:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        .bulk-input-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .bulk-input-actions button {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <header class="page-header">
+            <button class="btn-back" onclick="goBack()">←</button>
+            <h1>Chụp ảnh vé <span id="ticket-type-badge" class="ticket-type-badge"></span></h1>
+        </header>
+
+        <div class="page-content">
+            <!-- Camera Section -->
+            <div id="camera-section">
+                <div class="camera-container">
+                    <video id="camera-video" autoplay playsinline></video>
+                    <div class="camera-overlay">
+                        <div id="camera-guide" class="camera-guide"></div>
+                    </div>
+                </div>
+                <div class="camera-actions">
+                    <button class="btn-secondary" onclick="switchCamera()">🔄 Đổi camera</button>
+                    <button class="btn-primary btn-capture" onclick="capturePhoto()">📷 Chụp</button>
+                </div>
+                <p class="hint" style="text-align: center;">Đặt vé lô tô trong khung và nhấn Chụp</p>
+            </div>
+
+            <!-- Review Section -->
+            <div id="review-section" style="display: none;">
+                <img id="captured-image" alt="Ảnh đã chụp">
+
+                <button class="btn-primary ocr-btn" onclick="runOCR()" id="ocr-btn">
+                    ✨ Nhận diện số tự động (OCR)
+                </button>
+
+                <div id="status-message" class="status-message" style="display: none;"></div>
+
+                <div class="form-group">
+                    <label for="ticket-name">Tên vé</label>
+                    <input type="text" id="ticket-name" placeholder="Nhập tên vé">
+                </div>
+
+                <p class="hint" id="grid-hint">Nhấn vào ô để nhập số trực tiếp. Mỗi hàng phải có đúng 5 số.</p>
+
+                <!-- Nhập hàng loạt -->
+                <div class="bulk-input-section">
+                    <button class="btn-secondary btn-small" onclick="toggleBulkInput()" id="bulk-input-toggle">
+                        📝 Nhập hàng loạt
+                    </button>
+                    <div id="bulk-input-container" class="bulk-input-container" style="display: none;">
+                        <textarea id="bulk-input-text" placeholder="Nhập số theo dòng, mỗi dòng là 1 hàng
+Ví dụ: 1 2 3 4 5 hoặc 6,7,8,9,10"></textarea>
+                        <div class="bulk-input-actions">
+                            <button class="btn-secondary btn-small" onclick="clearBulkInput()">Xóa</button>
+                            <button class="btn-primary btn-small" onclick="applyBulkInput()">Áp dụng</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid cho vé cổ điển -->
+                <div id="classic-grid-section">
+                    <div id="ticket-grid" class="ticket-grid editable"></div>
+
+                    <div class="column-ranges">
+                        <p><strong>Phạm vi số theo cột:</strong></p>
+                        <div class="ranges-row">
+                            <span>C1: 1-9</span>
+                            <span>C2: 10-19</span>
+                            <span>C3: 20-29</span>
+                            <span>C4: 30-39</span>
+                            <span>C5: 40-49</span>
+                            <span>C6: 50-59</span>
+                            <span>C7: 60-69</span>
+                            <span>C8: 70-79</span>
+                            <span>C9: 80-90</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick numbers section -->
+                    <div id="quick-numbers-section" class="quick-numbers-section" style="display: none;">
+                        <p class="helper-hint">Chọn nhanh:</p>
+                        <div id="quick-numbers" class="quick-numbers"></div>
+                    </div>
+                </div>
+
+                <!-- Grid cho vé 5x5 -->
+                <div id="5x5-grid-section" style="display: none;">
+                    <div id="ticket-grid-5x5" class="ticket-grid ticket-grid-5x5 editable"></div>
+
+                    <div class="column-ranges">
+                        <p><strong>Lưu ý:</strong> Vé 5x5 gồm 2 khung, mỗi khung 5x5. Ô giữa (★) không nhập số. Số không trùng trong cùng 1 khung.</p>
+                    </div>
+
+                    <!-- Quick numbers section cho 5x5 -->
+                    <div id="quick-numbers-section-5x5" class="quick-numbers-section" style="display: none;">
+                        <p class="helper-hint">Chọn nhanh (1-90):</p>
+                        <div id="quick-numbers-5x5" class="quick-numbers quick-numbers-5x5"></div>
+                    </div>
+                </div>
+
+                <div class="save-actions">
+                    <button class="btn-secondary" onclick="retakePhoto()">🔄 Chụp lại</button>
+                    <button class="btn-primary" onclick="saveTicket()">💾 Lưu vé</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== CONFIG ====================
+        const STORAGE_KEY = 'doloto_tickets';
+        const OCR_API_URL = 'https://apipro2.ocr.space/parse/image';
+        const OCR_API_KEY = 'copyfishonly_24';
+
+        // ==================== STATE ====================
+        let cameraStream = null;
+        let facingMode = 'environment';
+        let cells = null;
+        let selectedCell = null;
+        let isProcessingOCR = false;
+        let ticketType = 'classic';
+
+        // ==================== INIT ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            ticketType = urlParams.get('type') || 'classic';
+            updateUIForTicketType();
+            cells = createEmptyGrid();
+            document.getElementById('ticket-name').value = `Vé ${getTicketCount() + 1}`;
+            startCamera();
+        });
+
+        function updateUIForTicketType() {
+            const badge = document.getElementById('ticket-type-badge');
+            const guide = document.getElementById('camera-guide');
+            const hint = document.getElementById('grid-hint');
+
+            if (ticketType === '5x5') {
+                badge.textContent = '5x5';
+                guide.classList.add('guide-5x5');
+                hint.textContent = 'Nhấn vào ô để nhập số trực tiếp. Hàng giữa có 4 số (ô giữa trống).';
+                document.getElementById('classic-grid-section').style.display = 'none';
+                document.getElementById('5x5-grid-section').style.display = 'block';
+                document.getElementById('ocr-btn').style.display = 'none';
+            } else {
+                badge.textContent = 'Cổ điển';
+                hint.textContent = 'Nhấn vào ô để nhập số trực tiếp. Mỗi hàng phải có đúng 5 số.';
+            }
+        }
+
+        function getTicketCount() {
+            const tickets = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            return tickets.length;
+        }
+
+        function createEmptyGrid() {
+            if (ticketType === '5x5') {
+                return Array(10).fill(null).map(() => Array(5).fill(null));
+            }
+            return Array(9).fill(null).map(() => Array(9).fill(null));
+        }
+
+        function isCenterCell5x5(row, col) {
+            return (row === 2 || row === 7) && col === 2;
+        }
+
+        function goBack() {
+            stopCamera();
+            window.location.href = 'index.html';
+        }
+
+        // ==================== CAMERA ====================
+        async function startCamera() {
+            try {
+                const constraints = {
+                    video: {
+                        facingMode: facingMode,
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+                document.getElementById('camera-video').srcObject = cameraStream;
+            } catch (err) {
+                console.error('Camera error:', err);
+                alert('Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập.');
+                goBack();
+            }
+        }
+
+        function stopCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+        }
+
+        async function switchCamera() {
+            facingMode = facingMode === 'environment' ? 'user' : 'environment';
+            stopCamera();
+            await startCamera();
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('camera-video');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+
+            const imageData = canvas.toDataURL('image/jpeg', 0.8);
+            document.getElementById('captured-image').src = imageData;
+
+            stopCamera();
+
+            document.getElementById('camera-section').style.display = 'none';
+            document.getElementById('review-section').style.display = 'block';
+
+            cells = createEmptyGrid();
+            renderGrid();
+        }
+
+        function retakePhoto() {
+            cells = createEmptyGrid();
+            selectedCell = null;
+            document.getElementById('camera-section').style.display = 'block';
+            document.getElementById('review-section').style.display = 'none';
+            document.getElementById('status-message').style.display = 'none';
+            document.getElementById('quick-numbers-section').style.display = 'none';
+            document.getElementById('quick-numbers-section-5x5').style.display = 'none';
+            startCamera();
+        }
+
+        // ==================== GRID RENDERING (INLINE EDITING) ====================
+        function renderGrid() {
+            if (ticketType === '5x5') {
+                renderGrid5x5();
+            } else {
+                renderGridClassic();
+            }
+        }
+
+        function renderGridClassic() {
+            const container = document.getElementById('ticket-grid');
+            container.innerHTML = cells.map((row, rowIndex) => {
+                const isSeparator = (rowIndex === 2 || rowIndex === 5) ? 'group-separator' : '';
+                return `
+                <div class="ticket-row ${isSeparator}">
+                    ${row.map((cell, colIndex) => {
+                        const isSelected = selectedCell && selectedCell.row === rowIndex && selectedCell.col === colIndex;
+                        let cellClass = 'ticket-cell';
+                        cellClass += cell === null ? ' empty' : ' number';
+                        if (isSelected) cellClass += ' selected editing';
+
+                        // Nếu đang selected → render input inline
+                        if (isSelected) {
+                            return `<div class="${cellClass}">
+                                <input type="text" class="cell-inline-input"
+                                       value="${cell !== null ? cell : ''}"
+                                       maxlength="2" inputmode="numeric"
+                                       onblur="saveCellValue(${rowIndex}, ${colIndex})"
+                                       onkeydown="handleCellKeydown(event, ${rowIndex}, ${colIndex})">
+                            </div>`;
+                        }
+
+                        return `<div class="${cellClass}" onclick="selectCell(${rowIndex}, ${colIndex})">${cell !== null ? cell : ''}</div>`;
+                    }).join('')}
+                </div>`;
+            }).join('');
+
+            // Auto focus vào input nếu có
+            const input = container.querySelector('.cell-inline-input');
+            if (input) {
+                input.focus();
+                input.select();
+            }
+        }
+
+        function renderGrid5x5() {
+            const container = document.getElementById('ticket-grid-5x5');
+            container.innerHTML = cells.map((row, rowIndex) => {
+                const isSeparator = rowIndex === 4 ? 'group-separator' : '';
+                const isCenterRow = (rowIndex === 2 || rowIndex === 7);
+                return `
+                <div class="ticket-row ${isSeparator}">
+                    ${row.map((cell, colIndex) => {
+                        const isCenterCell = isCenterRow && colIndex === 2;
+                        const isSelected = selectedCell && selectedCell.row === rowIndex && selectedCell.col === colIndex;
+                        let cellClass = 'ticket-cell';
+
+                        if (isCenterCell) {
+                            cellClass += ' center-empty disabled';
+                        } else if (cell === null) {
+                            cellClass += ' empty';
+                        } else {
+                            cellClass += ' number';
+                        }
+                        if (isSelected && !isCenterCell) cellClass += ' selected editing';
+
+                        // Nếu đang selected và không phải ô giữa → render input inline
+                        if (isSelected && !isCenterCell) {
+                            return `<div class="${cellClass}">
+                                <input type="text" class="cell-inline-input"
+                                       value="${cell !== null ? cell : ''}"
+                                       maxlength="2" inputmode="numeric"
+                                       onblur="saveCellValue5x5(${rowIndex}, ${colIndex})"
+                                       onkeydown="handleCellKeydown5x5(event, ${rowIndex}, ${colIndex})">
+                            </div>`;
+                        }
+
+                        const onclick = isCenterCell ? '' : `onclick="selectCell5x5(${rowIndex}, ${colIndex})"`;
+                        return `<div class="${cellClass}" ${onclick}>${cell !== null ? cell : (isCenterCell ? '★' : '')}</div>`;
+                    }).join('')}
+                </div>`;
+            }).join('');
+
+            const input = container.querySelector('.cell-inline-input');
+            if (input) {
+                input.focus();
+                input.select();
+            }
+        }
+
+        // ==================== CELL SELECTION (CLASSIC) ====================
+        function selectCell(row, col) {
+            // Lưu giá trị cell cũ trước
+            if (selectedCell) {
+                saveCellValue(selectedCell.row, selectedCell.col);
+            }
+
+            selectedCell = { row, col };
+            renderGrid();
+
+            // Cập nhật quick numbers section
+            const range = getColumnRange(col);
+            updateQuickNumbersSection(range);
+        }
+
+        function updateQuickNumbersSection(range) {
+            const section = document.getElementById('quick-numbers-section');
+            section.style.display = 'block';
+
+            const hint = section.querySelector('.helper-hint');
+            if (hint) hint.textContent = `Chọn nhanh (${range.min}-${range.max}):`;
+
+            const quickContainer = document.getElementById('quick-numbers');
+            quickContainer.innerHTML = '';
+            for (let num = range.min; num <= range.max; num++) {
+                const btn = document.createElement('button');
+                btn.className = 'quick-number-btn';
+                btn.textContent = num;
+                btn.onclick = () => setQuickNumber(num);
+                quickContainer.appendChild(btn);
+            }
+        }
+
+        function setQuickNumber(num) {
+            if (!selectedCell) return;
+
+            // Validate
+            if (!isValidNumberForColumn(num, selectedCell.col)) {
+                showStatus(`Số ${num} không hợp lệ cho cột này`, 'error');
+                return;
+            }
+
+            // Check duplicate
+            for (let c = 0; c < 9; c++) {
+                if (cells[selectedCell.row][c] === num && c !== selectedCell.col) {
+                    showStatus(`Số ${num} đã tồn tại trong hàng`, 'error');
+                    return;
+                }
+            }
+
+            cells[selectedCell.row][selectedCell.col] = num;
+            hideStatus();
+
+            // Chuyển sang ô tiếp theo
+            moveToNextCell();
+        }
+
+        function moveToNextCell() {
+            if (!selectedCell) return;
+            const { row, col } = selectedCell;
+
+            if (col < 8) {
+                selectCell(row, col + 1);
+            } else if (row < 8) {
+                selectCell(row + 1, 0);
+            } else {
+                selectedCell = null;
+                renderGrid();
+            }
+        }
+
+        function saveCellValue(row, col) {
+            const container = document.getElementById('ticket-grid');
+            const input = container ? container.querySelector('.cell-inline-input') : null;
+            if (!input) return true;
+
+            const value = input.value.trim();
+
+            if (value === '') {
+                cells[row][col] = null;
+                return true;
+            }
+
+            const number = parseInt(value);
+
+            if (isNaN(number) || number < 1 || number > 90) {
+                showStatus('Số phải từ 1-90', 'error');
+                return false;
+            }
+
+            if (!isValidNumberForColumn(number, col)) {
+                const range = getColumnRange(col);
+                showStatus(`Cột ${col + 1} chỉ chứa số ${range.min}-${range.max}`, 'error');
+                return false;
+            }
+
+            // Check duplicate
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    if (cells[r][c] === number && !(r === row && c === col)) {
+                        showStatus(`Số ${number} đã tồn tại trong vé`, 'error');
+                        return false;
+                    }
+                }
+            }
+
+            cells[row][col] = number;
+            hideStatus();
+            return true;
+        }
+
+        function handleCellKeydown(event, row, col) {
+            const input = event.target;
+
+            switch(event.key) {
+                case 'Enter':
+                    if (saveCellValue(row, col)) {
+                        if (row < 8) {
+                            selectCell(row + 1, col);
+                        } else {
+                            selectedCell = null;
+                            renderGrid();
+                        }
+                    }
+                    event.preventDefault();
+                    break;
+
+                case 'Tab':
+                    if (saveCellValue(row, col)) {
+                        if (event.shiftKey) {
+                            if (col > 0) selectCell(row, col - 1);
+                            else if (row > 0) selectCell(row - 1, 8);
+                        } else {
+                            if (col < 8) selectCell(row, col + 1);
+                            else if (row < 8) selectCell(row + 1, 0);
+                        }
+                    }
+                    event.preventDefault();
+                    break;
+
+                case 'Escape':
+                    selectedCell = null;
+                    renderGrid();
+                    break;
+
+                case 'ArrowUp':
+                    if (saveCellValue(row, col) && row > 0) selectCell(row - 1, col);
+                    event.preventDefault();
+                    break;
+
+                case 'ArrowDown':
+                    if (saveCellValue(row, col) && row < 8) selectCell(row + 1, col);
+                    event.preventDefault();
+                    break;
+
+                case 'ArrowLeft':
+                    if (input.selectionStart === 0 && saveCellValue(row, col) && col > 0) {
+                        selectCell(row, col - 1);
+                        event.preventDefault();
+                    }
+                    break;
+
+                case 'ArrowRight':
+                    if (input.selectionStart === input.value.length && saveCellValue(row, col) && col < 8) {
+                        selectCell(row, col + 1);
+                        event.preventDefault();
+                    }
+                    break;
+            }
+        }
+
+        // ==================== CELL SELECTION (5x5) ====================
+        function selectCell5x5(row, col) {
+            if (isCenterCell5x5(row, col)) return;
+
+            if (selectedCell) {
+                saveCellValue5x5(selectedCell.row, selectedCell.col);
+            }
+
+            selectedCell = { row, col };
+            renderGrid();
+
+            // Update quick numbers
+            updateQuickNumbersSection5x5();
+        }
+
+        function updateQuickNumbersSection5x5() {
+            const section = document.getElementById('quick-numbers-section-5x5');
+            section.style.display = 'block';
+
+            const quickContainer = document.getElementById('quick-numbers-5x5');
+            quickContainer.innerHTML = '';
+            for (let num = 1; num <= 90; num++) {
+                const btn = document.createElement('button');
+                btn.className = 'quick-number-btn';
+                btn.textContent = num;
+                btn.onclick = () => setQuickNumber5x5(num);
+                quickContainer.appendChild(btn);
+            }
+        }
+
+        function setQuickNumber5x5(num) {
+            if (!selectedCell) return;
+
+            // Check duplicate trong khung
+            const board = Math.floor(selectedCell.row / 5);
+            const startRow = board * 5;
+            const endRow = startRow + 5;
+
+            for (let r = startRow; r < endRow; r++) {
+                for (let c = 0; c < 5; c++) {
+                    if (cells[r][c] === num && !(r === selectedCell.row && c === selectedCell.col)) {
+                        showStatus(`Số ${num} đã tồn tại trong khung ${board + 1}`, 'error');
+                        return;
+                    }
+                }
+            }
+
+            cells[selectedCell.row][selectedCell.col] = num;
+            hideStatus();
+
+            // Chuyển sang ô tiếp theo
+            moveToNextCell5x5();
+        }
+
+        function moveToNextCell5x5() {
+            if (!selectedCell) return;
+            let { row, col } = selectedCell;
+
+            // Tìm ô tiếp theo, bỏ qua ô giữa
+            col++;
+            while (row < 10) {
+                if (col > 4) {
+                    col = 0;
+                    row++;
+                }
+                if (row >= 10) break;
+                if (!isCenterCell5x5(row, col)) {
+                    selectCell5x5(row, col);
+                    return;
+                }
+                col++;
+            }
+
+            selectedCell = null;
+            renderGrid();
+        }
+
+        function saveCellValue5x5(row, col) {
+            const container = document.getElementById('ticket-grid-5x5');
+            const input = container ? container.querySelector('.cell-inline-input') : null;
+            if (!input) return true;
+
+            const value = input.value.trim();
+
+            if (value === '') {
+                cells[row][col] = null;
+                return true;
+            }
+
+            const number = parseInt(value);
+
+            if (isNaN(number) || number < 1 || number > 90) {
+                showStatus('Số phải từ 1-90', 'error');
+                return false;
+            }
+
+            // Check duplicate trong khung
+            const board = Math.floor(row / 5);
+            const startRow = board * 5;
+            const endRow = startRow + 5;
+
+            for (let r = startRow; r < endRow; r++) {
+                for (let c = 0; c < 5; c++) {
+                    if (cells[r][c] === number && !(r === row && c === col)) {
+                        showStatus(`Số ${number} đã tồn tại trong khung ${board + 1}`, 'error');
+                        return false;
+                    }
+                }
+            }
+
+            cells[row][col] = number;
+            hideStatus();
+            return true;
+        }
+
+        function handleCellKeydown5x5(event, row, col) {
+            const input = event.target;
+
+            switch(event.key) {
+                case 'Enter':
+                    if (saveCellValue5x5(row, col)) {
+                        let nextRow = row + 1;
+                        while (nextRow < 10 && isCenterCell5x5(nextRow, col)) nextRow++;
+                        if (nextRow < 10) selectCell5x5(nextRow, col);
+                        else { selectedCell = null; renderGrid(); }
+                    }
+                    event.preventDefault();
+                    break;
+
+                case 'Tab':
+                    if (saveCellValue5x5(row, col)) {
+                        moveToNextCell5x5();
+                    }
+                    event.preventDefault();
+                    break;
+
+                case 'Escape':
+                    selectedCell = null;
+                    renderGrid();
+                    break;
+
+                case 'ArrowUp':
+                    if (saveCellValue5x5(row, col)) {
+                        let prevRow = row - 1;
+                        while (prevRow >= 0 && isCenterCell5x5(prevRow, col)) prevRow--;
+                        if (prevRow >= 0) selectCell5x5(prevRow, col);
+                    }
+                    event.preventDefault();
+                    break;
+
+                case 'ArrowDown':
+                    if (saveCellValue5x5(row, col)) {
+                        let nextRow = row + 1;
+                        while (nextRow < 10 && isCenterCell5x5(nextRow, col)) nextRow++;
+                        if (nextRow < 10) selectCell5x5(nextRow, col);
+                    }
+                    event.preventDefault();
+                    break;
+
+                case 'ArrowLeft':
+                    if (input.selectionStart === 0 && saveCellValue5x5(row, col)) {
+                        let prevCol = col - 1;
+                        while (prevCol >= 0 && isCenterCell5x5(row, prevCol)) prevCol--;
+                        if (prevCol >= 0) selectCell5x5(row, prevCol);
+                        event.preventDefault();
+                    }
+                    break;
+
+                case 'ArrowRight':
+                    if (input.selectionStart === input.value.length && saveCellValue5x5(row, col)) {
+                        let nextCol = col + 1;
+                        while (nextCol < 5 && isCenterCell5x5(row, nextCol)) nextCol++;
+                        if (nextCol < 5) selectCell5x5(row, nextCol);
+                        event.preventDefault();
+                    }
+                    break;
+            }
+        }
+
+        // ==================== HELPER FUNCTIONS ====================
+        function getColumnRange(col) {
+            if (col === 0) return { min: 1, max: 9 };
+            if (col === 8) return { min: 80, max: 90 };
+            return { min: col * 10, max: col * 10 + 9 };
+        }
+
+        function isValidNumberForColumn(number, col) {
+            const range = getColumnRange(col);
+            return number >= range.min && number <= range.max;
+        }
+
+        function getColumnForNumber(number) {
+            if (number >= 1 && number <= 9) return 0;
+            if (number >= 80 && number <= 90) return 8;
+            return Math.floor(number / 10);
+        }
+
+        // ==================== OCR ====================
+        async function runOCR() {
+            if (isProcessingOCR || ticketType === '5x5') return;
+            isProcessingOCR = true;
+
+            showStatus('Đang nhận diện số... Vui lòng đợi...', 'loading');
+
+            try {
+                const imageSrc = document.getElementById('captured-image').src;
+                const formData = new FormData();
+                formData.append('base64Image', imageSrc);
+                formData.append('apikey', OCR_API_KEY);
+                formData.append('language', 'eng');
+                formData.append('isOverlayRequired', 'true');
+                formData.append('detectOrientation', 'true');
+                formData.append('scale', 'true');
+                formData.append('OCREngine', '2');
+
+                const response = await fetch(OCR_API_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.ParsedResults && result.ParsedResults.length > 0) {
+                    const successCount = processOCRResult(result);
+                    if (successCount > 0) {
+                        renderGrid();
+                        showStatus(`Đã tìm thấy ${successCount} số. Vui lòng kiểm tra.`, 'success');
+                    } else {
+                        showStatus('Không nhận diện được số. Vui lòng nhập thủ công.', 'warning');
+                    }
+                } else {
+                    throw new Error(result.ErrorMessage || 'Lỗi API');
+                }
+            } catch (error) {
+                console.error('OCR error:', error);
+                showStatus('Lỗi OCR: ' + error.message, 'error');
+            } finally {
+                isProcessingOCR = false;
+            }
+        }
+
+        function processOCRResult(ocrResult) {
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    cells[r][c] = null;
+                }
+            }
+
+            const lines = ocrResult.ParsedResults[0].TextOverlay?.Lines;
+            if (!lines || lines.length === 0) {
+                const text = ocrResult.ParsedResults[0].ParsedText;
+                return parseTextNumbers(text);
+            }
+
+            let allWords = [];
+            lines.forEach(line => {
+                line.Words.forEach(word => {
+                    allWords.push({
+                        text: word.WordText,
+                        top: word.Top,
+                        left: word.Left,
+                        height: word.Height
+                    });
+                });
+            });
+            allWords.sort((a, b) => a.top - b.top);
+
+            let rows = [];
+            if (allWords.length > 0) {
+                let currentRow = [allWords[0]];
+                let rowThreshold = allWords[0].height / 2;
+
+                for (let i = 1; i < allWords.length; i++) {
+                    const word = allWords[i];
+                    const prevWord = currentRow[currentRow.length - 1];
+                    if (Math.abs(word.top - prevWord.top) < rowThreshold) {
+                        currentRow.push(word);
+                    } else {
+                        rows.push(currentRow);
+                        currentRow = [word];
+                        rowThreshold = word.height / 2;
+                    }
+                }
+                rows.push(currentRow);
+            }
+
+            let filledCount = 0;
+            let targetRowIndex = 0;
+
+            rows.forEach(rowWords => {
+                if (targetRowIndex >= 9) return;
+
+                let hasValidNumbers = false;
+                rowWords.sort((a, b) => a.left - b.left);
+
+                rowWords.forEach(word => {
+                    const numbers = splitStuckNumbers(word.text);
+                    numbers.forEach(num => {
+                        if (num >= 1 && num <= 90) {
+                            const colIndex = getColumnForNumber(num);
+                            if (cells[targetRowIndex][colIndex] === null) {
+                                cells[targetRowIndex][colIndex] = num;
+                                filledCount++;
+                                hasValidNumbers = true;
+                            }
+                        }
+                    });
+                });
+
+                if (hasValidNumbers) {
+                    targetRowIndex++;
+                }
+            });
+
+            return filledCount;
+        }
+
+        function parseTextNumbers(text) {
+            const numbers = [];
+            const regex = /\b([1-9]|[1-8][0-9]|90)\b/g;
+            let match;
+            while ((match = regex.exec(text)) !== null) {
+                const num = parseInt(match[1]);
+                if (!numbers.includes(num)) numbers.push(num);
+            }
+
+            let filledCount = 0;
+            const usedNumbers = new Set();
+
+            for (let row = 0; row < 9 && numbers.length > 0; row++) {
+                let filledInRow = 0;
+                for (let i = 0; i < numbers.length && filledInRow < 5; i++) {
+                    const num = numbers[i];
+                    if (!usedNumbers.has(num)) {
+                        const col = getColumnForNumber(num);
+                        if (cells[row][col] === null) {
+                            cells[row][col] = num;
+                            usedNumbers.add(num);
+                            filledCount++;
+                            filledInRow++;
+                        }
+                    }
+                }
+            }
+            return filledCount;
+        }
+
+        function splitStuckNumbers(text) {
+            text = text.replace(/[^0-9]/g, '');
+            if (!text) return [];
+
+            if (text.length <= 2) {
+                const val = parseInt(text);
+                return (val >= 1 && val <= 90) ? [val] : [];
+            }
+
+            const result = [];
+            let i = 0;
+
+            while (i < text.length) {
+                if (i + 2 <= text.length) {
+                    const twoChar = text.substring(i, i + 2);
+                    const val2 = parseInt(twoChar);
+
+                    if (val2 >= 1 && val2 <= 90) {
+                        const nextChar = text[i + 2];
+                        if (nextChar === '0') {
+                            const oneChar = text.substring(i, i + 1);
+                            result.push(parseInt(oneChar));
+                            i += 1;
+                        } else {
+                            result.push(val2);
+                            i += 2;
+                        }
+                    } else {
+                        const oneChar = text.substring(i, i + 1);
+                        result.push(parseInt(oneChar));
+                        i += 1;
+                    }
+                } else {
+                    const oneChar = text.substring(i, i + 1);
+                    result.push(parseInt(oneChar));
+                    i += 1;
+                }
+            }
+
+            return result;
+        }
+
+        // ==================== SAVE ====================
+        function saveTicket() {
+            const name = document.getElementById('ticket-name').value.trim();
+            if (!name) {
+                showStatus('Vui lòng nhập tên vé', 'error');
+                return;
+            }
+
+            let validation;
+            if (ticketType === '5x5') {
+                validation = validateTicket5x5();
+            } else {
+                validation = validateTicketClassic();
+            }
+
+            if (!validation.valid) {
+                showStatus(validation.error, 'error');
+                return;
+            }
+
+            const ticket = {
+                id: Date.now(),
+                name: name,
+                ticketType: ticketType,
+                cells: JSON.parse(JSON.stringify(cells)),
+                type: 'camera',
+                createdAt: new Date().toISOString()
+            };
+
+            const tickets = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            tickets.push(ticket);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(tickets));
+
+            stopCamera();
+            window.location.href = 'index.html';
+        }
+
+        function validateTicketClassic() {
+            for (let row = 0; row < 9; row++) {
+                const numbersInRow = cells[row].filter(n => n !== null);
+                if (numbersInRow.length !== 5) {
+                    return { valid: false, error: `Hàng ${row + 1} phải có đúng 5 số (hiện có ${numbersInRow.length})` };
+                }
+            }
+            return { valid: true };
+        }
+
+        function validateTicket5x5() {
+            for (let board = 0; board < 2; board++) {
+                const boardNumbers = new Set();
+                const startRow = board * 5;
+
+                for (let localRow = 0; localRow < 5; localRow++) {
+                    const row = startRow + localRow;
+                    const isCenterRow = localRow === 2;
+
+                    const numbersInRow = cells[row].filter((n, col) => {
+                        if (isCenterRow && col === 2) return false;
+                        return n !== null;
+                    });
+
+                    const expectedCount = isCenterRow ? 4 : 5;
+                    if (numbersInRow.length !== expectedCount) {
+                        return { valid: false, error: `Hàng ${row + 1} phải có ${expectedCount} số (hiện có ${numbersInRow.length})` };
+                    }
+
+                    for (const num of numbersInRow) {
+                        if (num < 1 || num > 90) {
+                            return { valid: false, error: `Số ${num} không hợp lệ (1-90)` };
+                        }
+                        if (boardNumbers.has(num)) {
+                            return { valid: false, error: `Số ${num} bị trùng trong khung ${board + 1}` };
+                        }
+                        boardNumbers.add(num);
+                    }
+                }
+            }
+            return { valid: true };
+        }
+
+        // ==================== UI ====================
+        function showStatus(message, type) {
+            const el = document.getElementById('status-message');
+            el.textContent = message;
+            el.style.display = 'block';
+
+            switch(type) {
+                case 'success':
+                    el.style.background = 'rgba(76,175,80,0.2)';
+                    el.style.color = '#155724';
+                    break;
+                case 'error':
+                    el.style.background = 'rgba(244,67,54,0.2)';
+                    el.style.color = '#721c24';
+                    break;
+                case 'warning':
+                case 'loading':
+                    el.style.background = 'rgba(255,193,7,0.2)';
+                    el.style.color = '#856404';
+                    break;
+            }
+        }
+
+        function hideStatus() {
+            document.getElementById('status-message').style.display = 'none';
+        }
+
+        // ==================== BULK INPUT ====================
+        function toggleBulkInput() {
+            const container = document.getElementById('bulk-input-container');
+            container.style.display = container.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function clearBulkInput() {
+            document.getElementById('bulk-input-text').value = '';
+        }
+
+        function applyBulkInput() {
+            const text = document.getElementById('bulk-input-text').value.trim();
+            if (!text) {
+                showStatus('Vui lòng nhập số', 'error');
+                return;
+            }
+
+            const lines = text.split('\n').filter(line => line.trim());
+
+            if (ticketType === '5x5') {
+                applyBulkInput5x5(lines);
+            } else {
+                applyBulkInputClassic(lines);
+            }
+        }
+
+        function parseNumbersFromLine(line) {
+            return line
+                .split(/[\s,;]+/)
+                .map(s => s.trim())
+                .filter(s => s)
+                .map(s => parseInt(s))
+                .filter(n => !isNaN(n) && n >= 1 && n <= 90);
+        }
+
+        function applyBulkInputClassic(lines) {
+            const maxRows = 9;
+            const newCells = Array(9).fill(null).map(() => Array(9).fill(null));
+
+            for (let rowIndex = 0; rowIndex < Math.min(lines.length, maxRows); rowIndex++) {
+                const numbers = parseNumbersFromLine(lines[rowIndex]);
+
+                if (numbers.length > 5) {
+                    showStatus(`Dòng ${rowIndex + 1}: Tối đa 5 số mỗi hàng`, 'error');
+                    return;
+                }
+
+                for (const num of numbers) {
+                    const col = getColumnForNumber(num);
+
+                    if (newCells[rowIndex][col] !== null) {
+                        showStatus(`Dòng ${rowIndex + 1}: Số ${num} và ${newCells[rowIndex][col]} cùng cột`, 'error');
+                        return;
+                    }
+
+                    for (let r = 0; r < maxRows; r++) {
+                        for (let c = 0; c < 9; c++) {
+                            if (newCells[r][c] === num) {
+                                showStatus(`Số ${num} bị trùng`, 'error');
+                                return;
+                            }
+                        }
+                    }
+
+                    newCells[rowIndex][col] = num;
+                }
+            }
+
+            cells = newCells;
+            selectedCell = null;
+            renderGrid();
+            hideStatus();
+            document.getElementById('bulk-input-container').style.display = 'none';
+
+            if (lines.length < maxRows) {
+                showStatus(`Đã nhập ${lines.length}/${maxRows} hàng`, 'warning');
+            }
+        }
+
+        function applyBulkInput5x5(lines) {
+            const maxRows = 10;
+            const newCells = Array(10).fill(null).map(() => Array(5).fill(null));
+
+            for (let rowIndex = 0; rowIndex < Math.min(lines.length, maxRows); rowIndex++) {
+                const numbers = parseNumbersFromLine(lines[rowIndex]);
+                const isCenterRow = (rowIndex === 2 || rowIndex === 7);
+                const expectedCount = isCenterRow ? 4 : 5;
+
+                if (numbers.length > expectedCount) {
+                    showStatus(`Dòng ${rowIndex + 1}: Tối đa ${expectedCount} số`, 'error');
+                    return;
+                }
+
+                const board = Math.floor(rowIndex / 5);
+                const boardStart = board * 5;
+                const boardEnd = boardStart + 5;
+
+                let colIndex = 0;
+                for (const num of numbers) {
+                    if (isCenterRow && colIndex === 2) colIndex++;
+                    if (colIndex >= 5) break;
+
+                    for (let r = boardStart; r < boardEnd; r++) {
+                        for (let c = 0; c < 5; c++) {
+                            if (newCells[r][c] === num) {
+                                showStatus(`Số ${num} bị trùng trong khung ${board + 1}`, 'error');
+                                return;
+                            }
+                        }
+                    }
+
+                    newCells[rowIndex][colIndex] = num;
+                    colIndex++;
+                }
+            }
+
+            cells = newCells;
+            selectedCell = null;
+            renderGrid();
+            hideStatus();
+            document.getElementById('bulk-input-container').style.display = 'none';
+
+            if (lines.length < maxRows) {
+                showStatus(`Đã nhập ${lines.length}/${maxRows} hàng`, 'warning');
+            }
+        }
+    </script>
+</body>
+</html>
